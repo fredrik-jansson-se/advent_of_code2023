@@ -18,10 +18,10 @@ fn run_2(_input: &str) -> anyhow::Result<usize> {
 #[cfg(test)]
 mod tests {
     #[test]
-    fn aoc1_run_1() {
+    fn day20_run_1() {
     }
 
     #[test]
-    fn aoc1_run_2() {
+    fn day20_run_2() {
     }
 }

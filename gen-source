@@ -1,7 +1,9 @@
 #!/bin/bash
 
 for day in $(seq 1 25); do
-  cat > "src/day$day.rs" <<EOF
+  filename="src/day$day.rs"
+  if [ ! -e "$filename" ]; then
+    cat > "src/day$day.rs" <<EOF
 pub fn run() -> anyhow::Result<()> {
     let input = std::fs::read_to_string("day$day.txt")?;
 
@@ -22,12 +24,13 @@ fn run_2(_input: &str) -> anyhow::Result<usize> {
 #[cfg(test)]
 mod tests {
     #[test]
-    fn aoc1_run_1() {
+    fn day${day}_run_1() {
     }
 
     #[test]
-    fn aoc1_run_2() {
+    fn day${day}_run_2() {
     }
 }
 EOF
+  fi
 done
