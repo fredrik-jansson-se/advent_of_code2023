@@ -61,6 +61,6 @@ fn main() -> anyhow::Result<()> {
         23 => day23::run(),
         24 => day24::run(),
         25 => day25::run(),
-        _ => Err(anyhow::anyhow!("Not yet implemented")),
+        _ => Err(anyhow::anyhow!("No such day")),
     }
 }
