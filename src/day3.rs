@@ -12,8 +12,6 @@ pub fn run() -> anyhow::Result<()> {
     Ok(())
 }
 
-// 325882 -- too low
-// 532460 -- too high
 fn run_1(input: &str) -> anyhow::Result<usize> {
     let input: Vec<&str> = input.lines().collect();
     // Find the symbols
