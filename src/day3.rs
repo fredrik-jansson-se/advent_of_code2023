@@ -61,7 +61,6 @@ fn run_1(input: &str) -> anyhow::Result<usize> {
     Ok(res.iter().sum())
 }
 
-// 68166583 -- too low
 fn run_2(input: &str) -> anyhow::Result<usize> {
     let input: Vec<&str> = input.lines().collect();
     // Find the symbols
