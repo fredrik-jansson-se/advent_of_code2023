@@ -1,5 +1,5 @@
-use std::{collections::HashMap, usize};
 use rayon::prelude::*;
+use std::collections::HashMap;
 
 use nom::{
     bytes::complete::tag,
@@ -26,9 +26,6 @@ fn next_dest(maps: &[Map], src_value: usize) -> usize {
     maps.iter()
         .find_map(|m| m.to_dest(src_value))
         .unwrap_or(src_value)
-}
-
-impl Garden {
 }
 
 #[derive(Debug)]
@@ -105,10 +102,7 @@ fn run_1(input: &str) -> anyhow::Result<usize> {
     loop {
         let (_, next, maps) = garden.maps.iter().find(|(s, _, _)| s == cur).unwrap();
 
-        let res = results[cur]
-            .iter()
-            .map(|c| next_dest(maps, *c))
-            .collect();
+        let res = results[cur].iter().map(|c| next_dest(maps, *c)).collect();
 
         results.insert(next, res);
 
@@ -128,13 +122,13 @@ fn run_2(input: &str) -> anyhow::Result<usize> {
     let end = "location";
     let mut cur = "seed";
 
-    let seeds:&mut Vec<usize> = results.entry(cur).or_default();
+    let seeds: &mut Vec<usize> = results.entry(cur).or_default();
 
     for s in garden.seeds.chunks(2) {
         let seed_start = s[0];
         let seed_len = s[1];
         for i in 0..seed_len {
-            seeds.push(seed_start+i);
+            seeds.push(seed_start + i);
         }
     }
 
