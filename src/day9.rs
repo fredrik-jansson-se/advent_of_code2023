@@ -31,10 +31,7 @@ fn run_1(input: &str) -> anyhow::Result<isize> {
                 .collect()
         })
         .collect();
-    Ok(histories
-        .iter()
-        .map(|v| find_bottom(v))
-        .sum())
+    Ok(histories.iter().map(|v| find_bottom(v)).sum())
 }
 
 fn run_2(input: &str) -> anyhow::Result<isize> {
@@ -47,10 +44,7 @@ fn run_2(input: &str) -> anyhow::Result<isize> {
                 .collect()
         })
         .collect();
-    Ok(histories
-        .iter()
-        .map(|v| find_bottom(v))
-        .sum())
+    Ok(histories.iter().map(|v| find_bottom(v)).sum())
 }
 
 #[cfg(test)]

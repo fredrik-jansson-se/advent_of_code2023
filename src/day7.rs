@@ -21,9 +21,6 @@ fn run_1(input: &str) -> anyhow::Result<usize> {
         .sum())
 }
 
-// 252829329 - too low
-// 252884460 - too low
-// 252941412 - too low
 fn run_2(input: &str) -> anyhow::Result<usize> {
     let mut hands = parse(input);
 
@@ -39,47 +36,50 @@ fn run_2(input: &str) -> anyhow::Result<usize> {
     }
 
     for hand in hands.iter_mut() {
-        let num_jokers = hand.cards.iter().filter(|c| c.0 == 1).count();
+        let num_jokers = hand.cards.iter_mut().filter(|c| c.0 == 1).count();
 
         if num_jokers > 0 {
             match hand.t {
+                Type::HighCard if num_jokers == 1 => {
+                    hand.t = Type::OnePair(Card(1));
+                }
                 Type::OnePair(c) if num_jokers == 1 => {
                     hand.t = Type::ThreeOfAKind(c);
-                }
-                Type::ThreeOfAKind(c) if c.0 == 1 && num_jokers == 3 => {
-                    // already a joker
                 }
                 Type::ThreeOfAKind(c) if num_jokers == 1 => {
                     hand.t = Type::FourOfAKind(c);
                 }
-                Type::FullHouse { three: c1, two: c2 } if c1.0 == 1 || c2.0 == 1 => {
-                    hand.t = Type::FiveOfAKind(c2);
-                }
                 Type::FourOfAKind(c) if num_jokers == 1 => {
                     hand.t = Type::FiveOfAKind(c);
-                }
-                Type::FourOfAKind(c) if num_jokers == 4 => {
-                    hand.t = Type::FiveOfAKind(c);
-                }
-                Type::TwoPair(c1, _c2) if num_jokers == 2 => {
-                    hand.t = Type::FourOfAKind(c1);
                 }
                 Type::TwoPair(c1, c2) if num_jokers == 1 => {
                     hand.t = Type::FullHouse { three: c1, two: c2 };
                 }
+
                 Type::OnePair(c) if c.0 == 1 && num_jokers == 2 => {
+                    hand.t = Type::ThreeOfAKind(Card(1))
+                }
+                Type::TwoPair(c1, _c2) if num_jokers == 2 => {
+                    hand.t = Type::FourOfAKind(c1);
+                }
+                Type::FullHouse { three: c1, two: c2 } if c1.0 == 1 || c2.0 == 1 => {
+                    hand.t = Type::FiveOfAKind(c2);
+                }
+
+                Type::ThreeOfAKind(c) if c.0 == 1 && num_jokers == 3 => {
                     // already a joker
+                    hand.t = Type::FourOfAKind(Card(1));
+                }
+                Type::FourOfAKind(c) if num_jokers == 4 => {
+                    hand.t = Type::FiveOfAKind(c);
                 }
                 Type::FiveOfAKind(_c) if num_jokers == 5 => {
                     // already a joker
                 }
-                Type::HighCard if num_jokers == 1 => {
-                    hand.t = Type::OnePair(Card(1));
-                }
                 t => {
                     if num_jokers != 0 {
                         dbg! {(t, num_jokers)};
-                        // unreachable!()
+                        unreachable!()
                     }
                 }
             }
@@ -266,6 +266,9 @@ QQQJA 483";
 
     #[test]
     fn day7_run_2() {
+        assert_eq!(super::run_2("QQQQ2 1
+JKKK2 2").unwrap(), 4);
+
         assert_eq!(super::run_2(INPUT).unwrap(), 5905);
     }
 }

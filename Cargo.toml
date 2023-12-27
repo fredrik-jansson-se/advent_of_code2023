@@ -8,4 +8,7 @@ edition = "2021"
 [dependencies]
 anyhow = "1"
 nom = "7"
-rayon = "1.8.0"
+num = "0.4"
+num-traits = "0.2"
+pathfinding = "4"
+rayon = "1"

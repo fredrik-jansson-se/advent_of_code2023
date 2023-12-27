@@ -3,6 +3,7 @@ use std::env;
 pub type Input<'a> = &'a str;
 pub type PResult<'a, T> = nom::IResult<Input<'a>, T, nom::error::VerboseError<Input<'a>>>;
 
+mod common;
 mod day1;
 mod day10;
 mod day11;
