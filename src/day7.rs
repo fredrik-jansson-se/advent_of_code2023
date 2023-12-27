@@ -1,4 +1,4 @@
-use std::{cmp::Ordering, collections::HashMap, usize};
+use std::{cmp::Ordering, collections::HashMap};
 
 pub fn run() -> anyhow::Result<()> {
     let input = std::fs::read_to_string("day7.txt")?;

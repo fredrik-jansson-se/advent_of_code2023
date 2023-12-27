@@ -1,69 +1,109 @@
+use std::{isize, usize};
+
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
+pub struct Coord(isize, isize);
+
+impl std::fmt::Display for Coord {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "({}, {})", self.0, self.1)
+    }
+}
+
+impl Coord {
+    pub fn row(&self) -> usize {
+        self.0 as _
+    }
+
+    pub fn irow(&self) -> isize {
+        self.0
+    }
+
+    pub fn col(&self) -> usize {
+        self.1 as _
+    }
+
+    pub fn icol(&self) -> isize {
+        self.1
+    }
+
+    pub fn neighbors(&self) -> impl Iterator<Item = Self> {
+        [
+            (self.irow() - 1, self.icol()).into(),
+            (self.irow() + 1, self.icol()).into(),
+            (self.irow(), self.icol() - 1).into(),
+            (self.irow(), self.icol() + 1).into(),
+        ]
+        .into_iter()
+    }
+}
+
+impl From<(usize, usize)> for Coord {
+    fn from(value: (usize, usize)) -> Self {
+        Self(value.0 as _, value.1 as _)
+    }
+}
+
+impl From<(isize, isize)> for Coord {
+    fn from(value: (isize, isize)) -> Self {
+        Self(value.0 as _, value.1 as _)
+    }
+}
+
+impl From<(i32, i32)> for Coord {
+    fn from(value: (i32, i32)) -> Self {
+        Self(value.0 as _, value.1 as _)
+    }
+}
+
 #[derive(Clone, Copy, Eq, PartialEq, Hash)]
 pub(crate) enum Dir {
-    N,
+    // N,
     S,
     E,
-    W,
+    // W,
 }
 
 impl Dir {
-    pub(crate) fn turn_left(self) -> Self {
-        match self {
-            Dir::N => Self::W,
-            Dir::S => Self::E,
-            Dir::E => Self::N,
-            Dir::W => Self::S,
-        }
-    }
+    // pub(crate) fn turn_left(self) -> Self {
+    //     match self {
+    //         Dir::N => Self::W,
+    //         Dir::S => Self::E,
+    //         Dir::E => Self::N,
+    //         Dir::W => Self::S,
+    //     }
+    // }
 
-    pub(crate) fn turn_right(self) -> Self {
-        match self {
-            Dir::N => Self::E,
-            Dir::S => Self::W,
-            Dir::E => Self::S,
-            Dir::W => Self::N,
-        }
-    }
+    // pub(crate) fn turn_right(self) -> Self {
+    //     match self {
+    //         Dir::N => Self::E,
+    //         Dir::S => Self::W,
+    //         Dir::E => Self::S,
+    //         Dir::W => Self::N,
+    //     }
+    // }
 }
 
 #[derive(Clone, Copy, Hash)]
-pub struct Pos<A> {
+pub struct Pos {
     pub dir: Dir,
-    pub c: (A, A),
+    pub c: Coord,
 }
 
-impl<A: num::Signed + num::ToPrimitive + Copy> Pos<A> {
-    pub fn move_forward(&self) -> Self {
-        let dp = match self.dir {
-            Dir::N => (-A::one(), A::zero()),
-            Dir::S => (A::one(), A::zero()),
-            Dir::E => (A::zero(), A::one()),
-            Dir::W => (A::zero(), -A::one()),
-        };
+impl Pos {
+    // pub fn move_forward(&self) -> Self {
+    //     let dp = match self.dir {
+    //         Dir::N => (-1, 0),
+    //         Dir::S => (1, 0),
+    //         Dir::E => (0, 1),
+    //         Dir::W => (0, -1),
+    //     };
 
-        let c = (self.c.0 + dp.0, self.c.1 + dp.1);
+    //     let c = Coord(self.c.0 + dp.0, self.c.1 + dp.1);
 
-        Self { dir: self.dir, c }
-    }
+    //     Self { dir: self.dir, c }
+    // }
 
-    pub fn manhattan(&self, other: &Self) -> usize {
-        ((self.c.0 - other.c.0).abs() + (self.c.1 - other.c.1).abs())
-            .to_usize()
-            .unwrap()
-    }
-
-    pub fn neighbors<F>(&self, pred: F) -> Vec<(A, A)>
-    where
-        F: Fn(&(A, A)) -> bool,
-    {
-        [
-            (self.c.0 - A::one(), self.c.1),
-            (self.c.0 + A::one(), self.c.1),
-            (self.c.0, self.c.1 - A::one()),
-            (self.c.0, self.c.1 + A::one()),
-        ]
-        .into_iter()
-        .filter(pred)
-        .collect()
-    }
+    // pub fn manhattan(&self, other: &Self) -> usize {
+    //     ((self.c.irow() - other.c.irow()).abs() + (self.c.icol() - other.c.icol()).abs()) as usize
+    // }
 }

@@ -13,7 +13,7 @@ pub fn run() -> anyhow::Result<()> {
 type Coord = (isize, isize);
 
 #[derive(Clone,Hash)]
-struct Pos(crate::common::Pos<isize>);
+struct Pos(crate::common::Pos);
 
 impl PartialEq for Pos {
     fn eq(&self, other: &Self) -> bool {
@@ -23,8 +23,8 @@ impl PartialEq for Pos {
 
 impl Eq for Pos {}
 
-impl AsRef<crate::common::Pos<isize>> for Pos {
-    fn as_ref(&self) -> &crate::common::Pos<isize> {
+impl AsRef<crate::common::Pos> for Pos {
+    fn as_ref(&self) -> &crate::common::Pos {
         &self.0
     }
 }
@@ -41,7 +41,7 @@ fn run_1(input: &str) -> anyhow::Result<usize> {
 
     let sp = (
         Pos(crate::common::Pos {
-            c: (0, 0),
+            c: (0, 0).into(),
             dir: Dir::E,
         }),
         // std::collections::VecDeque::new(),
@@ -51,7 +51,7 @@ fn run_1(input: &str) -> anyhow::Result<usize> {
         crate::common::Pos {
             c: 
         ((map.len() - 1) as isize,
-        (map[map.len() - 1].len() - 1) as isize),
+        (map[map.len() - 1].len() - 1) as isize).into(),
         dir: crate::common::Dir::S,
         };
 

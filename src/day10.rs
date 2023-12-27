@@ -1,4 +1,4 @@
-use std::{collections::HashSet, usize};
+use std::collections::HashSet;
 
 pub fn run() -> anyhow::Result<()> {
     let input = std::fs::read_to_string("day10.txt")?;
@@ -19,76 +19,66 @@ fn run_1(input: &str) -> anyhow::Result<usize> {
             row.iter()
                 .enumerate()
                 .find(|(_, c)| **c == 'S')
-                .map(|(col, _)| Coord(r, col))
+                .map(|(col, _)| (r, col).into())
         })
         .unwrap();
 
-    let mut to_search: HashSet<Coord> = HashSet::new();
+    let mut to_search: Vec<Coord> = Vec::new();
+    let mut visited: HashSet<Coord> = HashSet::new();
 
-    to_search.insert(start);
+    to_search.push(start);
 
-    // while let Some(c) = to_search {
-    //     // let nbrs = [
-    //     // ].filter(
-    //     break;
-    // }
-    todo!()
+    while let Some(cur) = to_search.pop() {
+        if visited.contains(&cur) {
+            continue;
+        }
+        visited.insert(cur);
+
+        let nbrs = cur
+            .neighbors()
+            .filter(|coord| !visited.contains(coord) && can_go(&cur, coord, &map));
+
+        to_search.extend(nbrs);
+    }
+
+    Ok(visited.len() / 2)
 }
 
 fn run_2(_input: &str) -> anyhow::Result<usize> {
     todo!()
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
-struct Coord(usize, usize);
-
-impl Coord {
-    fn col(&self) -> usize {
-        self.1
-    }
-    fn icol(&self) -> isize {
-        self.1 as _
-    }
-
-    fn row(&self) -> usize {
-        self.0
-    }
-    fn irow(&self) -> isize {
-        self.0 as _
-    }
-}
 type Map = Vec<Vec<char>>;
+type Coord = crate::common::Coord;
 
-fn can_go(from: &Coord, to: Coord, map: &Map) -> bool {
-    if !map
+fn can_go(from: &Coord, to: &Coord, map: &Map) -> bool {
+    if map
         .get(to.row())
-        .map(|row| row.get(to.col()))
-        .flatten()
-        .is_some()
+        .and_then(|row| row.get(to.col()))
+        .is_none()
     {
         return false;
     }
+    let src = map[from.row()][from.col()];
     match (to.irow() - from.irow(), to.icol() - from.icol()) {
         // Coming from north
-        (1, 0) => match map[to.row()][to.col()] {
-            '|' | 'L' | 'J' => true,
-            _ => false,
-        },
+        (1, 0) => {
+            (src == '|' || src == '7' || src == 'F' || src == 'S')
+                && matches!(map[to.row()][to.col()], '|' | 'L' | 'J')
+        }
         // Coming from south
-        (-1, 0) => match map[to.row()][to.col()] {
-            '|' | '7' | 'F' => true,
-            _ => false,
-        },
+        (-1, 0) => {
+            (src == '|' || src == 'L' || src == 'J' || src == 'S')
+                && matches!(map[to.row()][to.col()], '|' | '7' | 'F')
+        }
         // coming from west
-        (0, 1) => match map[to.row()][to.col()] {
-            '-' | 'J' | '7' => true,
-            _ => false,
-        },
+        (0, 1) => {
+            (src == '-' || src == 'L' || src == 'F' || src == 'S')
+                && matches!(map[to.row()][to.col()], '-' | 'J' | '7')
+        }
         // coming from east
-        (0, -1) => match map[to.row()][to.col()] {
-            '-' | 'L' | 'F' => true,
-            _ => false,
-        },
+        (0, -1) => (src == '-' || src == 'J' || src=='7' || src=='S') &&
+            matches!(map[to.row()][to.col()], '-' | 'L' | 'F'),
         _ => unreachable!(),
     }
 }
@@ -100,10 +90,16 @@ mod tests {
 .|.|.
 .L-J.
 .....";
+    const INPUT_2: &str = "..F7.
+.FJ|.
+SJ.L7
+|F--J
+LJ...";
 
     #[test]
     fn day10_run_1() {
-        assert_eq!(super::run_1(INPUT_1).unwrap(), 8);
+        assert_eq!(super::run_1(INPUT_1).unwrap(), 4);
+        assert_eq!(super::run_1(INPUT_2).unwrap(), 8);
     }
 
     #[test]
