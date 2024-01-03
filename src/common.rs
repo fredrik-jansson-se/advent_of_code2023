@@ -1,7 +1,7 @@
 use std::{isize, usize};
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
-pub struct Coord(isize, isize);
+pub struct Coord(pub isize, pub isize);
 
 impl std::fmt::Display for Coord {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -10,6 +10,9 @@ impl std::fmt::Display for Coord {
 }
 
 impl Coord {
+    pub fn new(row: isize, col: isize) -> Self {
+        (row, col).into()
+    }
     pub fn row(&self) -> usize {
         self.0 as _
     }
@@ -35,6 +38,10 @@ impl Coord {
         ]
         .into_iter()
     }
+
+    pub fn manhattan(&self, other: &Self) -> usize {
+        ((self.irow() - other.irow()).abs() + (self.icol() - other.icol()).abs()) as usize
+    }
 }
 
 impl From<(usize, usize)> for Coord {
@@ -58,8 +65,8 @@ impl From<(i32, i32)> for Coord {
 #[derive(Clone, Copy, Eq, PartialEq, Hash)]
 pub(crate) enum Dir {
     // N,
-    S,
-    E,
+    // S,
+    // E,
     // W,
 }
 
@@ -103,7 +110,4 @@ impl Pos {
     //     Self { dir: self.dir, c }
     // }
 
-    // pub fn manhattan(&self, other: &Self) -> usize {
-    //     ((self.c.irow() - other.c.irow()).abs() + (self.c.icol() - other.c.icol()).abs()) as usize
-    // }
 }

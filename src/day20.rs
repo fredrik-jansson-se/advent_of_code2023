@@ -18,15 +18,15 @@ pub fn run() -> anyhow::Result<()> {
 
 #[derive(Clone)]
 enum Pulse {
-    High(String, usize),
-    Low(String, usize),
+    // High(String, usize),
+    // Low(String, usize),
 }
 
-enum ModType {
-    FlipFlop,
-    Broadcaster,
-    Conjunction,
-}
+// enum ModType {
+//     FlipFlop,
+//     Broadcaster,
+//     Conjunction,
+// }
 
 trait Module {
     fn run(&mut self);
@@ -42,7 +42,7 @@ struct Broadcaster {
 
 impl Module for Broadcaster {
     fn run(&mut self) {
-        let mut last_pulse = 0;
+        // let last_pulse = 0;
 
         loop {
             let Ok(pulse) = self.input.recv() else {
@@ -54,8 +54,7 @@ impl Module for Broadcaster {
                 .outputs
                 .iter()
                 .map(|o| o.send(pulse.clone()))
-                .find(|r| r.is_err())
-                .is_some()
+                .any(|r| r.is_err())
             {
                 return;
             }

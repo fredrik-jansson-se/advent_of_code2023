@@ -1,4 +1,4 @@
-use crate::common::Dir;
+// use crate::common::Dir;
 
 pub fn run() -> anyhow::Result<()> {
     let input = std::fs::read_to_string("day17.txt")?;
@@ -10,14 +10,18 @@ pub fn run() -> anyhow::Result<()> {
 }
 
 
-type Coord = (isize, isize);
-
-#[derive(Clone,Hash)]
+#[derive(Clone)]
 struct Pos(crate::common::Pos);
 
 impl PartialEq for Pos {
     fn eq(&self, other: &Self) -> bool {
         self.0.c == other.0.c
+    }
+}
+
+impl std::hash::Hash for Pos {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.0.c.hash(state)
     }
 }
 
@@ -30,7 +34,7 @@ impl AsRef<crate::common::Pos> for Pos {
 }
 
 fn run_1(input: &str) -> anyhow::Result<usize> {
-    let map: Vec<Vec<isize>> = input
+    let _map: Vec<Vec<isize>> = input
         .lines()
         .map(|line| {
             line.chars()
@@ -39,21 +43,21 @@ fn run_1(input: &str) -> anyhow::Result<usize> {
         })
         .collect();
 
-    let sp = (
-        Pos(crate::common::Pos {
-            c: (0, 0).into(),
-            dir: Dir::E,
-        }),
-        // std::collections::VecDeque::new(),
-    );
+    // let sp = (
+    //     Pos(crate::common::Pos {
+    //         c: (0, 0).into(),
+    //         dir: Dir::E,
+    //     }),
+    //     // std::collections::VecDeque::new(),
+    // );
 
-    let finish = 
-        crate::common::Pos {
-            c: 
-        ((map.len() - 1) as isize,
-        (map[map.len() - 1].len() - 1) as isize).into(),
-        dir: crate::common::Dir::S,
-        };
+    // let finish = 
+    //     crate::common::Pos {
+    //         c: 
+    //     ((map.len() - 1) as isize,
+    //     (map[map.len() - 1].len() - 1) as isize).into(),
+    //     dir: crate::common::Dir::S,
+    //     };
 
     // let path = pathfinding::directed::astar::astar(
     //     &sp,
