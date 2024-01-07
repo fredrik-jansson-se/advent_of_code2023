@@ -13,7 +13,6 @@ fn hash(i: &str) -> usize {
     i.chars().fold(0, |p, c| (17 * (p + (c as usize))) % 256)
 }
 
-// 508354 -- too low
 fn run_1(input: &str) -> anyhow::Result<usize> {
     Ok(input
         .lines()
