@@ -173,12 +173,10 @@ fn run_2(input: &str) -> anyhow::Result<usize> {
         run_cycle(&mut board);
         if !prev.contains(&board) {
             prev.push(board.clone());
-        } else {
-            if (i % prev.len()) == (dest % prev.len()) {
-                println!("Break {i}");
-                println!("m: {}", dest%prev.len());
-                break;
-            }
+        } else if (i % prev.len()) == (dest % prev.len()) {
+            println!("Break {i}");
+            println!("m: {}", dest % prev.len());
+            break;
         }
     }
 

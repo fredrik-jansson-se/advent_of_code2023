@@ -64,30 +64,30 @@ impl From<(i32, i32)> for Coord {
 
 #[derive(Clone, Copy, Eq, PartialEq, Hash)]
 pub(crate) enum Dir {
-    // N,
-    // S,
-    // E,
-    // W,
+    N,
+    S,
+    E,
+    W,
 }
 
 impl Dir {
-    // pub(crate) fn turn_left(self) -> Self {
-    //     match self {
-    //         Dir::N => Self::W,
-    //         Dir::S => Self::E,
-    //         Dir::E => Self::N,
-    //         Dir::W => Self::S,
-    //     }
-    // }
+    pub(crate) fn turn_left(self) -> Self {
+        match self {
+            Dir::N => Self::W,
+            Dir::S => Self::E,
+            Dir::E => Self::N,
+            Dir::W => Self::S,
+        }
+    }
 
-    // pub(crate) fn turn_right(self) -> Self {
-    //     match self {
-    //         Dir::N => Self::E,
-    //         Dir::S => Self::W,
-    //         Dir::E => Self::S,
-    //         Dir::W => Self::N,
-    //     }
-    // }
+    pub(crate) fn turn_right(self) -> Self {
+        match self {
+            Dir::N => Self::E,
+            Dir::S => Self::W,
+            Dir::E => Self::S,
+            Dir::W => Self::N,
+        }
+    }
 }
 
 #[derive(Clone, Copy, Hash)]
@@ -97,17 +97,25 @@ pub struct Pos {
 }
 
 impl Pos {
-    // pub fn move_forward(&self) -> Self {
-    //     let dp = match self.dir {
-    //         Dir::N => (-1, 0),
-    //         Dir::S => (1, 0),
-    //         Dir::E => (0, 1),
-    //         Dir::W => (0, -1),
-    //     };
+    pub fn move_forward(&self) -> Self {
+        let dp = match self.dir {
+            Dir::N => (-1, 0),
+            Dir::S => (1, 0),
+            Dir::E => (0, 1),
+            Dir::W => (0, -1),
+        };
 
-    //     let c = Coord(self.c.0 + dp.0, self.c.1 + dp.1);
+        let c = Coord(self.c.0 + dp.0, self.c.1 + dp.1);
 
-    //     Self { dir: self.dir, c }
-    // }
+        Self { dir: self.dir, c }
+    }
 
+    pub fn row(&self) -> usize {
+        self.c.row()
+    }
+
+
+    pub fn col(&self) -> usize {
+        self.c.col()
+    }
 }

@@ -49,10 +49,10 @@ fn run_1(input: &str) -> anyhow::Result<usize> {
                 let c_val = &mut col_maps[l - 1][col];
                 *c_val = (*c_val << 1) + 1;
             } else {
-                val = (val << 1) + 0;
+                val = val << 1;
                 let l = col_maps.len();
                 let c_val = &mut col_maps[l - 1][col];
-                *c_val = (*c_val << 1) + 0;
+                *c_val <<= 1;
             }
         }
 
