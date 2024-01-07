@@ -26,7 +26,6 @@ enum Rock {
 //     });
 // }
 
-// 107003 -- too low
 fn run_1(input: &str) -> anyhow::Result<usize> {
     let board: Vec<Vec<Option<Rock>>> = input
         .lines()
