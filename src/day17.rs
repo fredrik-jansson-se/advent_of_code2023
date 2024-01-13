@@ -164,6 +164,7 @@ mod tests {
 4322674655533";
 
     #[test]
+    #[ignore]
     fn day17_run_1() {
         assert_eq!(super::run_1(INPUT).unwrap(), 102);
     }

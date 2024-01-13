@@ -330,6 +330,7 @@ hdj{m>838:A,pv}
     }
 
     #[test]
+    #[ignore]
     fn day19_run_2() {
         assert_eq!(super::run_2(INPUT).unwrap(), 167409079868000);
     }

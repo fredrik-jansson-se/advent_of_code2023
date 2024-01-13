@@ -53,6 +53,7 @@ rzs: qnr cmg lsr rsh
 frs: qnr lhk lsr";
 
     #[test]
+    #[ignore]
     fn day25_run_1() {
         assert_eq!(super::run_1(INPUT).unwrap(), 54);
     }

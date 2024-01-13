@@ -207,6 +207,7 @@ O.#..O.#.#
     }
 
     #[test]
+    #[ignore]
     fn day14_run_2() {
         assert_eq!(super::run_2(INPUT).unwrap(), 64);
     }

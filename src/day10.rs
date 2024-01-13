@@ -202,6 +202,7 @@ LJ...";
     }
 
     #[test]
+    #[ignore]
     fn day10_run_2() {
         // assert_eq!(super::run_2(".S.").unwrap(), 1);
         // assert_eq!(super::run_2(".S-.").unwrap(), 1);

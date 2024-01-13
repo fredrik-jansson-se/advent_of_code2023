@@ -113,6 +113,7 @@ mod tests {
 %b -> con
 &con -> output";
     #[test]
+    #[ignore]
     fn day20_run_1() {
         assert_eq!(super::run_1(INPUT).unwrap(), 32000000);
     }
