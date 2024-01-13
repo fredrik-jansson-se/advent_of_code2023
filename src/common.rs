@@ -3,6 +3,14 @@ use std::{isize, usize};
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 pub struct Coord(pub isize, pub isize);
 
+impl std::ops::Add<Coord> for Coord {
+    type Output = Coord;
+
+    fn add(self, rhs: Coord) -> Self::Output {
+        (self.0 + rhs.0, self.1 + rhs.1).into()
+    }
+}
+
 impl std::fmt::Display for Coord {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "({}, {})", self.0, self.1)
@@ -62,7 +70,7 @@ impl From<(i32, i32)> for Coord {
     }
 }
 
-#[derive(Clone, Copy, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
 pub(crate) enum Dir {
     N,
     S,
@@ -90,7 +98,7 @@ impl Dir {
     }
 }
 
-#[derive(Clone, Copy, Hash)]
+#[derive(Clone, Debug, Copy, PartialEq, Eq, Hash)]
 pub struct Pos {
     pub dir: Dir,
     pub c: Coord,
@@ -103,17 +111,31 @@ impl Pos {
             Dir::S => (1, 0),
             Dir::E => (0, 1),
             Dir::W => (0, -1),
-        };
+        }
+        .into();
 
-        let c = Coord(self.c.0 + dp.0, self.c.1 + dp.1);
+        let c = self.c + dp;
 
         Self { dir: self.dir, c }
+    }
+
+    pub fn turn_right(&self) -> Self {
+        Self {
+            c: self.c,
+            dir: self.dir.turn_right(),
+        }
+    }
+
+    pub fn turn_left(&self) -> Self {
+        Self {
+            c: self.c,
+            dir: self.dir.turn_left(),
+        }
     }
 
     pub fn row(&self) -> usize {
         self.c.row()
     }
-
 
     pub fn col(&self) -> usize {
         self.c.col()

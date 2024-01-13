@@ -12,14 +12,6 @@ pub fn run() -> anyhow::Result<()> {
     Ok(())
 }
 
-impl PartialEq for Pos {
-    fn eq(&self, other: &Self) -> bool {
-        self.dir == other.dir && self.c == other.c
-    }
-}
-
-impl Eq for Pos {}
-
 fn calc_energized(map: &[Vec<char>], ray: Pos) -> usize {
     let mut rays = vec![ray];
     let mut visited = HashSet::new();
