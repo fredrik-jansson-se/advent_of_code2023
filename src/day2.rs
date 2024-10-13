@@ -1,5 +1,3 @@
-use std::usize;
-
 pub fn run() -> anyhow::Result<()> {
     let input = std::fs::read_to_string("day2.txt")?;
 

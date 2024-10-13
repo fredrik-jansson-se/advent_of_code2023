@@ -1,5 +1,3 @@
-use std::usize;
-
 use nom::{
     bytes::complete::tag,
     character::complete::{newline, space1},

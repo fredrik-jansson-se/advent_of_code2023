@@ -1,5 +1,3 @@
-use std::{isize, usize};
-
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 pub struct Coord(pub isize, pub isize);
 
@@ -116,7 +114,10 @@ impl Pos {
 
         let coord = self.coord + dp;
 
-        Self { dir: self.dir, coord }
+        Self {
+            dir: self.dir,
+            coord,
+        }
     }
 
     pub fn turn_right(&self) -> Self {

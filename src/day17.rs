@@ -42,20 +42,6 @@ impl Crucible {
     }
 }
 
-//impl PartialEq for Crucible {
-//    fn eq(&self, other: &Self) -> bool {
-//        self.pos.coord == other.pos.coord
-//    }
-//}
-//
-//impl std::hash::Hash for Crucible {
-//    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-//        self.pos.coord.hash(state);
-//    }
-//}
-//
-//impl Eq for Crucible {}
-
 fn parse_map(input: &str) -> Vec<Vec<isize>> {
     input
         .lines()
@@ -92,10 +78,6 @@ fn possible_moves(c: &Crucible, map: &[Vec<isize>]) -> Vec<(Crucible, isize)> {
     res
 }
 
-// Wrong: 825
-// Too high: 822
-// Too low: 778
-// Too high: 805
 fn run_1(input: &str) -> anyhow::Result<usize> {
     let map = parse_map(input);
 
@@ -113,7 +95,7 @@ fn run_1(input: &str) -> anyhow::Result<usize> {
     )
         .into();
 
-    let (path, cost) = pathfinding::directed::astar::astar(
+    let (_path, cost) = pathfinding::directed::astar::astar(
         &start,
         |crucible| possible_moves(crucible, &map),
         |crucible| crucible.pos.coord.manhattan(&finish) as isize,
@@ -121,28 +103,63 @@ fn run_1(input: &str) -> anyhow::Result<usize> {
     )
     .unwrap();
 
-    //for (ri, row) in map.iter().enumerate() {
-    //    for (ci, c) in row.iter().enumerate() {
-    //        if let Some(crucible) = path.iter().find(|c| c.pos.coord == (ri, ci).into()) {
-    //            match crucible.pos.dir {
-    //                Dir::N => print!("^"),
-    //                Dir::S => print!("v"),
-    //                Dir::E => print!(">"),
-    //                Dir::W => print!("<"),
-    //            }
-    //        } else {
-    //            print!("{c}");
-    //        }
-    //    }
-    //    println!();
-    //}
-
-    // let cost = cost - map[finish.row()][finish.col()];
     Ok(cost as usize)
 }
 
-fn run_2(_input: &str) -> anyhow::Result<usize> {
-    todo!()
+fn possible_moves_uc(c: &Crucible, map: &[Vec<isize>]) -> Vec<(Crucible, isize)> {
+    let in_map = |c: &Crucible| map.get(c.pos.row()).and_then(|row| row.get(c.pos.col()));
+    let mut res = Vec::with_capacity(3);
+
+    // Can only move forward max 10 times in a row
+    if c.num_steps_forward < 10 {
+        let n = c.move_forward();
+        if let Some(cost) = in_map(&n) {
+            res.push((n, *cost));
+        }
+    }
+
+    // Can only turn after 4 steps
+    if c.num_steps_forward >= 4 {
+        let n = c.turn_right();
+        if let Some(cost) = in_map(&n) {
+            res.push((n, *cost));
+        }
+
+        let n = c.turn_left();
+        if let Some(cost) = in_map(&n) {
+            res.push((n, *cost));
+        }
+    }
+
+    res
+}
+
+fn run_2(input: &str) -> anyhow::Result<usize> {
+    let map = parse_map(input);
+
+    let start = Crucible {
+        pos: Pos {
+            coord: (0, 0).into(),
+            dir: Dir::E,
+        },
+        num_steps_forward: 0,
+    };
+
+    let finish: Coord = (
+        (map.len() - 1) as isize,
+        (map[map.len() - 1].len() - 1) as isize,
+    )
+        .into();
+
+    let (_path, cost) = pathfinding::directed::astar::astar(
+        &start,
+        |crucible| possible_moves_uc(crucible, &map),
+        |crucible| crucible.pos.coord.manhattan(&finish) as isize,
+        |crucible| crucible.pos.coord == finish,
+    )
+    .unwrap();
+
+    Ok(cost as usize)
 }
 
 #[cfg(test)]
@@ -168,7 +185,9 @@ mod tests {
     }
 
     #[test]
-    fn day17_run_2() {}
+    fn day17_run_2() {
+        assert_eq!(super::run_2(INPUT).unwrap(), 94);
+    }
 
     #[test]
     fn day17_possible_moves() {
@@ -181,7 +200,7 @@ mod tests {
             },
         };
         let possible_moves = super::possible_moves(&cruzible, &map);
-        dbg!{&possible_moves};
+        dbg! {&possible_moves};
         assert_eq!(possible_moves.len(), 1);
     }
 }

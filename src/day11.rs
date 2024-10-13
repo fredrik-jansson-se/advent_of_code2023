@@ -1,5 +1,3 @@
-use std::usize;
-
 use crate::common::Coord;
 
 pub fn run() -> anyhow::Result<()> {

@@ -1,7 +1,4 @@
-use std::{
-    collections::{HashMap, HashSet},
-    usize,
-};
+use std::collections::{HashMap, HashSet};
 
 pub fn run() -> anyhow::Result<()> {
     let input = std::fs::read_to_string("day3.txt")?;
