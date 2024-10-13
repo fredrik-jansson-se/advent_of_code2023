@@ -1,4 +1,3 @@
-use petgraph::data::Build;
 
 pub fn run() -> anyhow::Result<()> {
     let input = std::fs::read_to_string("day25.txt")?;

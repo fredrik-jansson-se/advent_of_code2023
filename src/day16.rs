@@ -68,7 +68,7 @@ fn calc_energized(map: &[Vec<char>], ray: Pos) -> usize {
         rays.append(&mut new_rays);
     }
 
-    let visited: HashSet<_> = visited.into_iter().map(|p| p.c).collect();
+    let visited: HashSet<_> = visited.into_iter().map(|p| p.coord).collect();
     visited.len()
 }
 
@@ -79,7 +79,7 @@ fn run_1(input: &str) -> anyhow::Result<usize> {
         &map,
         Pos {
             dir: Dir::E,
-            c: (0, 0).into(),
+            coord: (0, 0).into(),
         },
     ))
 }
@@ -94,21 +94,21 @@ fn run_2(input: &str) -> anyhow::Result<usize> {
     for row in 0..rows {
         starting_points.push(Pos {
             dir: Dir::E,
-            c: (row, 0).into(),
+            coord: (row, 0).into(),
         });
         starting_points.push(Pos {
             dir: Dir::W,
-            c: (row, cols - 1).into(),
+            coord: (row, cols - 1).into(),
         });
     }
     for col in 0..cols {
         starting_points.push(Pos {
             dir: Dir::S,
-            c: (0, col).into(),
+            coord: (0, col).into(),
         });
         starting_points.push(Pos {
             dir: Dir::N,
-            c: (rows - 1, col).into(),
+            coord: (rows - 1, col).into(),
         });
     }
     Ok(starting_points

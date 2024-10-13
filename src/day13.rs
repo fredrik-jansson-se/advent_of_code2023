@@ -1,5 +1,3 @@
-// use ndarray::{ArrayViewD, IxDyn};
-
 pub fn run() -> anyhow::Result<()> {
     let input = std::fs::read_to_string("day13.txt")?;
 
@@ -14,29 +12,25 @@ pub fn run() -> anyhow::Result<()> {
 // 20074 -- too low
 // 29463 -- wrong
 fn run_1(input: &str) -> anyhow::Result<usize> {
-    let mut maps: Vec<ndarray::ArrayD<usize>> = Vec::new();
+    //let mut maps: Vec<ndarray::ArrayD<usize>> = Vec::new();
     let mut row_maps = Vec::new();
     let mut col_maps: Vec<Vec<usize>> = Vec::new();
     row_maps.push(Vec::new());
     col_maps.push(Vec::new());
-    maps.push(ndarray::ArrayD::default(ndarray::IxDyn(&[0, 1])));
+    //maps.push(ndarray::ArrayD::default(ndarray::IxDyn(&[0, 0])));
+    //let a_zero: ndarray::ArrayD<usize> = ndarray::ArrayD::zeros(ndarray::IxDyn(&[1]));
+    //let a_one : ndarray::ArrayD<usize> = ndarray::ArrayD::ones(ndarray::IxDyn(&[1]));
     for line in input.lines() {
         if line.is_empty() {
-            maps.push(ndarray::ArrayD::default(ndarray::IxDyn(&[0, 1])));
+            //maps.push(ndarray::ArrayD::default(ndarray::IxDyn(&[0, 0])));
             row_maps.push(Vec::new());
             col_maps.push(Vec::new());
             continue;
         }
-        // let l = maps.len();
-        // let d = maps[maps.len() - 1].dim();
-        // dbg!{&d};
-        // dbg!{&maps[l-1]};
-        // let view_dim: IxDyn = IxDyn(&[1, d[1]]);
-        // maps[l - 1].push(
-        //     ndarray::Axis(0),
-        //     ArrayViewD::from_shape(view_dim, vec![0usize; d[1]].as_slice())?,
-        // )?;
+        //let ml = maps.len();
+        //let mut cur_map = &mut maps[ml - 1];
         let mut val = 0;
+        //let mut cur_row = ndarray::ArrayD::default(ndarray::IxDyn(&[1]));
         for (col, c) in line.chars().enumerate() {
             if col_maps[col_maps.len() - 1].get(col).is_none() {
                 let l = col_maps.len();
@@ -44,11 +38,16 @@ fn run_1(input: &str) -> anyhow::Result<usize> {
             }
 
             if c == '#' {
+                //dbg!{&cur_row};
+                //cur_row.push(ndarray::Axis(0), a_one.view())
+                //    .context("add one")?;
                 val = (val << 1) + 1;
                 let l = col_maps.len();
                 let c_val = &mut col_maps[l - 1][col];
                 *c_val = (*c_val << 1) + 1;
             } else {
+                //dbg!{&cur_row};
+                //cur_row.push(ndarray::Axis(0), a_zero.view())?;
                 val <<= 1;
                 let l = col_maps.len();
                 let c_val = &mut col_maps[l - 1][col];

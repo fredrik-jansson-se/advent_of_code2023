@@ -1,5 +1,5 @@
 use std::{collections::HashMap, usize};
-use rayon::prelude::*;
+// use rayon::prelude::*;
 
 use nom::{
     bytes::complete::tag,

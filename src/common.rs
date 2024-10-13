@@ -101,7 +101,7 @@ impl Dir {
 #[derive(Clone, Debug, Copy, PartialEq, Eq, Hash)]
 pub struct Pos {
     pub dir: Dir,
-    pub c: Coord,
+    pub coord: Coord,
 }
 
 impl Pos {
@@ -114,30 +114,30 @@ impl Pos {
         }
         .into();
 
-        let c = self.c + dp;
+        let coord = self.coord + dp;
 
-        Self { dir: self.dir, c }
+        Self { dir: self.dir, coord }
     }
 
     pub fn turn_right(&self) -> Self {
         Self {
-            c: self.c,
+            coord: self.coord,
             dir: self.dir.turn_right(),
         }
     }
 
     pub fn turn_left(&self) -> Self {
         Self {
-            c: self.c,
+            coord: self.coord,
             dir: self.dir.turn_left(),
         }
     }
 
     pub fn row(&self) -> usize {
-        self.c.row()
+        self.coord.row()
     }
 
     pub fn col(&self) -> usize {
-        self.c.col()
+        self.coord.col()
     }
 }
