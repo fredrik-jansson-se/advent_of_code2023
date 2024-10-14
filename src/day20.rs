@@ -178,12 +178,11 @@ fn run_1(input: &str) -> anyhow::Result<usize> {
             //println!("{from} -{pulse:?} -> {to}");
             if let Some(module) = map.get_mut(&to) {
                 let mut new_signals = module.set_input(&from, &to, pulse);
-                new_signals.append(&mut signals_to_process);
-                signals_to_process = new_signals;
+                //new_signals.append(&mut signals_to_process);
+                signals_to_process.append(&mut new_signals);
             }
         }
     }
-    dbg! {(low_pulses, high_pulses)};
     Ok(low_pulses * high_pulses)
 }
 
