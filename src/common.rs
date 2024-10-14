@@ -1,4 +1,4 @@
-#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Hash, PartialEq, Eq)]
 pub struct Coord(pub isize, pub isize);
 
 impl std::ops::Add<Coord> for Coord {
@@ -9,11 +9,20 @@ impl std::ops::Add<Coord> for Coord {
     }
 }
 
+impl std::ops::Sub<Coord> for Coord {
+    type Output = Coord;
+
+    fn sub(self, rhs: Coord) -> Self::Output {
+        (self.0 - rhs.0, self.1 - rhs.1).into()
+    }
+}
+
 impl std::fmt::Display for Coord {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "({}, {})", self.0, self.1)
     }
 }
+
 
 impl Coord {
     pub fn new(row: isize, col: isize) -> Self {
@@ -94,6 +103,16 @@ impl Dir {
             Dir::W => Self::N,
         }
     }
+
+    pub(crate) fn movement(&self) -> Coord {
+        match self {
+            Dir::N => (-1, 0),
+            Dir::S => (1, 0),
+            Dir::E => (0, 1),
+            Dir::W => (0, -1),
+        }
+        .into()
+    }
 }
 
 #[derive(Clone, Debug, Copy, PartialEq, Eq, Hash)]
@@ -104,13 +123,7 @@ pub struct Pos {
 
 impl Pos {
     pub fn move_forward(&self) -> Self {
-        let dp = match self.dir {
-            Dir::N => (-1, 0),
-            Dir::S => (1, 0),
-            Dir::E => (0, 1),
-            Dir::W => (0, -1),
-        }
-        .into();
+        let dp = self.dir.movement();
 
         let coord = self.coord + dp;
 

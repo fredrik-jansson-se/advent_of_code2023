@@ -1,11 +1,10 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, VecDeque};
 
+use crate::Input;
 use nom::{
     bytes::complete::tag, character::complete::newline, multi::separated_list1,
     sequence::separated_pair,
 };
-
-use crate::Input;
 
 pub fn run() -> anyhow::Result<()> {
     let input = std::fs::read_to_string("day20.txt")?;
@@ -16,27 +15,11 @@ pub fn run() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[derive(Clone)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Pulse {
-    High { pulse_idx: usize },
-    Low { pulse_idx: usize },
+    High,
+    Low,
 }
-
-// impl Ord for Pulse {
-//     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-//         let s_pulse_idx = match self {
-//             Pulse::High { pulse_idx } => pulse_idx,
-//             Pulse::Low { pulse_idx } => pulse_idx,
-//         };
-
-//         let o_pulse_idx = match other {
-//             Pulse::High { pulse_idx } => pulse_idx,
-//             Pulse::Low { pulse_idx } => pulse_idx,
-//         };
-    
-//         s_pulse_idx.cmp(o_pulse_idx)
-//     }
-// }
 
 #[derive(Debug)]
 enum ModType {
@@ -45,139 +28,163 @@ enum ModType {
     Conjunction,
 }
 
-trait Module {
-    fn add_output(&mut self, o: &str);
-    fn inc_inputs(&mut self);
-    fn set_input(&mut self, from: &str, pulse: &Pulse) -> Vec<(String, Pulse)>;
+trait Module: std::fmt::Debug {
+    fn add_input(&mut self, i: &str);
+    fn set_input(
+        &mut self,
+        from: &str,
+        to: &str,
+        pulse: Pulse,
+    ) -> VecDeque<(String, String, Pulse)>;
+    fn get_outputs(&self) -> Vec<String>;
 }
 
+#[derive(Debug)]
 struct Broadcaster {
     outputs: Vec<String>,
 }
 
 impl Module for Broadcaster {
-    // fn run(&mut self) -> Vec<Pulse> {
-    //     let pulse = Pulse::Low("broadcast".to_string(), self.pulse_idx);
-    //     self.pulse_idx+=1;
-    //     self.outputs.iter().map(|o| Pulse::Low(o.to_string(), self.pulse_idx)).collect()
-    // }
-
-    fn add_output(&mut self, o: &str) {
-        self.outputs.push(o.to_string());
+    fn add_input(&mut self, _o: &str) {
+        unreachable!()
     }
 
-    fn inc_inputs(&mut self) {}
-
-    fn set_input(&mut self, _from: &str, pulse: &Pulse) -> Vec<(String, Pulse)> {
+    fn set_input(
+        &mut self,
+        _from: &str,
+        to: &str,
+        pulse: Pulse,
+    ) -> VecDeque<(String, String, Pulse)> {
         self.outputs
             .iter()
-            .map(|_o| ("broadcast".to_string(), pulse.clone()))
+            .map(|o| (to.to_string(), o.to_string(), pulse))
             .collect()
+    }
+
+    fn get_outputs(&self) -> Vec<String> {
+        self.outputs.clone()
     }
 }
 
 impl Broadcaster {
-    fn new() -> Self {
+    fn new(outputs: &[String]) -> Self {
         Self {
-            outputs: Vec::new(),
+            outputs: outputs.to_vec(),
         }
     }
 }
 
+#[derive(Debug)]
 struct FlipFlop {
     on: bool,
-    num_inputs: usize,
     outputs: Vec<String>,
 }
 
 impl Module for FlipFlop {
-    fn add_output(&mut self, o: &str) {
-        self.outputs.push(o.to_string());
+    fn add_input(&mut self, _i: &str) {
     }
 
-    fn inc_inputs(&mut self) {
-        self.num_inputs += 1;
-    }
+    fn set_input(
+        &mut self,
+        _from: &str,
+        to: &str,
+        pulse: Pulse,
+    ) -> VecDeque<(String, String, Pulse)> {
+        if Pulse::Low == pulse {
+            self.on = !self.on;
+            let new_pulse = if self.on { Pulse::High } else { Pulse::Low };
 
-    fn set_input(&mut self, _from: &str, pulse: &Pulse) -> Vec<(String, Pulse)> {
-        if let Pulse::Low { pulse_idx } = pulse {
-            let new_pulse = if self.on {
-                self.on = false;
-                Pulse::Low {
-                    pulse_idx: pulse_idx + 1,
-                }
-            } else {
-                self.on = true;
-                Pulse::High {
-                    pulse_idx: pulse_idx + 1,
-                }
-            };
-            return self
-                .outputs
+            self.outputs
                 .iter()
-                .map(|o| (o.to_string(), new_pulse.clone()))
-                .collect();
+                .map(|o| (to.to_string(), o.to_string(), new_pulse))
+                .collect()
+        } else {
+            VecDeque::new()
         }
-        Vec::new()
+    }
+    fn get_outputs(&self) -> Vec<String> {
+        self.outputs.clone()
     }
 }
 
 impl FlipFlop {
-    fn new() -> Self {
+    fn new(outputs: &[String]) -> Self {
         Self {
             on: false,
-            num_inputs: 0,
-            outputs: Vec::new(),
+            outputs: outputs.to_vec(),
         }
     }
 }
 
+#[derive(Debug)]
 struct Conjunction {
-    last_inputs: HashMap<String, Pulse>,
-    num_inputs: usize,
+    inputs: HashMap<String, Pulse>,
     outputs: Vec<String>,
 }
 
 impl Module for Conjunction {
-    fn add_output(&mut self, o: &str) {
-        self.outputs.push(o.to_string());
+    fn add_input(&mut self, o: &str) {
+        self.inputs.insert(o.to_string(), Pulse::Low);
     }
 
-    fn inc_inputs(&mut self) {
-        self.num_inputs += 1;
+    fn set_input(
+        &mut self,
+        from: &str,
+        to: &str,
+        pulse: Pulse,
+    ) -> VecDeque<(String, String, Pulse)> {
+        *self.inputs.get_mut(from).unwrap() = pulse;
+        let all_high = self.inputs.values().all(|p| *p == Pulse::High);
+        let new_pulse = if all_high { Pulse::Low } else { Pulse::High };
+        self.outputs
+            .iter()
+            .map(|o| (to.to_string(), o.to_string(), new_pulse))
+            .collect()
     }
-
-    fn set_input(&mut self, _from: &str, _pulse: &Pulse) -> Vec<(String, Pulse)> {
-        //let last = self
-        //    .last_inputs
-        //    .entry(from.to_string())
-        //    .or_insert(Pulse::Low { pulse_idx: 0 });
-        // if
-        todo!()
+    fn get_outputs(&self) -> Vec<String> {
+        self.outputs.clone()
     }
 }
 
 impl Conjunction {
-    fn new() -> Self {
+    fn new(outputs: &[String]) -> Self {
         Self {
-            last_inputs: HashMap::new(),
-            num_inputs: 0,
-            outputs: Vec::new(),
+            inputs: Default::default(),
+            outputs: outputs.to_vec(),
         }
-    }
-}
-
-fn run_simulation(_models: &mut HashMap<String, Box<dyn Module>>, iters: usize) {
-    for _ in 0..iters {
-        // let mut heap = BinaryHeap::new();
-        // let
     }
 }
 
 fn run_1(input: &str) -> anyhow::Result<usize> {
     let (_i, mut map) = parse(input).map_err(|e| anyhow::anyhow!(e.to_string()))?;
-    run_simulation(&mut map, 1000);
-    todo!();
+    let mut low_pulses = 0;
+    let mut high_pulses = 0;
+    for _ in 0..1000 {
+        // Add low pulse from button
+        low_pulses += 1;
+        let bcast = "broadcaster";
+
+        let mut signals_to_process =
+            map.get_mut(bcast)
+                .unwrap()
+                .set_input("button", bcast, Pulse::Low);
+
+        while let Some((from, to, pulse)) = signals_to_process.pop_front() {
+            if pulse == Pulse::Low {
+                low_pulses += 1;
+            } else {
+                high_pulses += 1;
+            };
+            //println!("{from} -{pulse:?} -> {to}");
+            if let Some(module) = map.get_mut(&to) {
+                let mut new_signals = module.set_input(&from, &to, pulse);
+                new_signals.append(&mut signals_to_process);
+                signals_to_process = new_signals;
+            }
+        }
+    }
+    dbg! {(low_pulses, high_pulses)};
+    Ok(low_pulses * high_pulses)
 }
 
 fn run_2(_input: &str) -> anyhow::Result<usize> {
@@ -215,30 +222,28 @@ fn parse(i: crate::Input) -> crate::PResult<HashMap<String, Box<dyn Module>>> {
 
     let mut res: HashMap<String, Box<dyn Module>> = HashMap::new();
 
-    for m in rows.iter() {
-        let name = &m.0;
-        match m.1 .0 {
+    for (name, (t, outputs)) in rows.iter() {
+        match t {
             ModType::FlipFlop => {
-                res.insert(name.to_string(), Box::new(FlipFlop::new()));
+                res.insert(name.to_string(), Box::new(FlipFlop::new(outputs)));
             }
             ModType::Broadcaster => {
-                res.insert(name.to_string(), Box::new(Broadcaster::new()));
+                res.insert(name.to_string(), Box::new(Broadcaster::new(outputs)));
             }
             ModType::Conjunction => {
-                res.insert(name.to_string(), Box::new(Conjunction::new()));
+                res.insert(name.to_string(), Box::new(Conjunction::new(outputs)));
             }
         }
     }
 
-    for m in rows {
-        {
-            let the_mod = res.get_mut(&m.0).unwrap();
-            for output in m.1 .1.iter() {
-                the_mod.add_output(&output);
+    // Update the inputs
+    let names: Vec<_> = res.keys().cloned().collect();
+    for name in names {
+        let outputs = res[&name].get_outputs();
+        for output in outputs {
+            if let Some(output) = res.get_mut(&output) {
+                output.add_input(&name);
             }
-        }
-        for output in m.1 .1.iter() {
-            res.get_mut(output).unwrap().inc_inputs();
         }
     }
 
@@ -247,14 +252,22 @@ fn parse(i: crate::Input) -> crate::PResult<HashMap<String, Box<dyn Module>>> {
 
 #[cfg(test)]
 mod tests {
-    const INPUT: &str = "broadcaster -> a
+    const INPUT_1: &str = "broadcaster -> a, b, c
+%a -> b
+%b -> c
+%c -> inv
+&inv -> a";
+
+    const INPUT_2: &str = "broadcaster -> a
 %a -> inv, con
 &inv -> b
 %b -> con
 &con -> output";
+
     #[test]
     fn day20_run_1() {
-        //assert_eq!(super::run_1(INPUT).unwrap(), 32000000);
+        assert_eq!(super::run_1(INPUT_1).unwrap(), 32000000);
+        assert_eq!(super::run_1(INPUT_2).unwrap(), 11687500);
     }
 
     #[test]

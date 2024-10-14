@@ -88,16 +88,16 @@ fn run_cycle(board: &mut [Vec<Option<Rock>>]) {
     // print_board(&board);
 
     // West
-    for cur_row in 0..board.len() {
+    for cur_row in &mut *board {
         // Check east to find ball
-        for col in 0..(board[cur_row].len() - 1) {
-            let o = &board[cur_row][col];
+        for col in 0..(cur_row.len() - 1) {
+            let o = &cur_row[col];
             if o.is_none() {
-                for check_col in (col + 1)..board[cur_row].len() {
-                    if Some(Rock::Rounded) == board[cur_row][check_col] {
-                        board[cur_row][col] = board[cur_row][check_col].take();
+                for check_col in (col + 1)..cur_row.len() {
+                    if Some(Rock::Rounded) == cur_row[check_col] {
+                        cur_row[col] = cur_row[check_col].take();
                         break;
-                    } else if Some(Rock::Cubic) == board[cur_row][check_col] {
+                    } else if Some(Rock::Cubic) == cur_row[check_col] {
                         break;
                     }
                 }
@@ -129,17 +129,17 @@ fn run_cycle(board: &mut [Vec<Option<Rock>>]) {
     // print_board(&board);
 
     // East
-    for cur_row in 0..board.len() {
+    for cur_row in &mut * board {
         // Check east to find ball
-        for col in (1..(board[cur_row].len())).rev() {
-            let o = &board[cur_row][col];
+        for col in (1..(cur_row.len())).rev() {
+            let o = &cur_row[col];
             if o.is_none() {
                 for check_col in (0..col).rev() {
                     // println!("col: {col} check: {check_col}");
-                    if Some(Rock::Rounded) == board[cur_row][check_col] {
-                        board[cur_row][col] = board[cur_row][check_col].take();
+                    if Some(Rock::Rounded) == cur_row[check_col] {
+                        cur_row[col] = cur_row[check_col].take();
                         break;
-                    } else if Some(Rock::Cubic) == board[cur_row][check_col] {
+                    } else if Some(Rock::Cubic) == cur_row[check_col] {
                         break;
                     }
                 }

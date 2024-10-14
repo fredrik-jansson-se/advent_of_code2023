@@ -1,5 +1,3 @@
-use std::isize;
-
 use crate::common::{Coord, Dir, Pos};
 
 pub fn run() -> anyhow::Result<()> {

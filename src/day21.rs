@@ -32,25 +32,25 @@ fn parse(i: &str) -> (Coord, HashSet<Coord>) {
     (start.unwrap(), garden_plots)
 }
 
-fn print(map: &HashSet<Coord>, overlay: &HashSet<Coord>) {
-    let (max_row, max_col) = map.iter().fold((0, 0), |(max_row, max_col), c| {
-        (max_row.max(c.row()), max_col.max(c.col()))
-    });
-
-    for r in 0..=max_row {
-        for c in 0..=max_col {
-            let c: Coord = (r, c).into();
-            if overlay.contains(&c) {
-                print!("O");
-            } else if map.contains(&c) {
-                print!(".");
-            } else {
-                print!(" ");
-            }
-        }
-        println!()
-    }
-}
+//fn print(map: &HashSet<Coord>, overlay: &HashSet<Coord>) {
+//    let (max_row, max_col) = map.iter().fold((0, 0), |(max_row, max_col), c| {
+//        (max_row.max(c.row()), max_col.max(c.col()))
+//    });
+//
+//    for r in 0..=max_row {
+//        for c in 0..=max_col {
+//            let c: Coord = (r, c).into();
+//            if overlay.contains(&c) {
+//                print!("O");
+//            } else if map.contains(&c) {
+//                print!(".");
+//            } else {
+//                print!(" ");
+//            }
+//        }
+//        println!()
+//    }
+//}
 
 fn simulate(i: &str, steps: usize) -> anyhow::Result<usize> {
     let (start, garden_plots) = parse(i);

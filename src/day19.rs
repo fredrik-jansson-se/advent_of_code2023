@@ -1,5 +1,4 @@
-use std::{collections::HashMap, usize};
-// use rayon::prelude::*;
+use std::collections::HashMap;
 
 use nom::{
     bytes::complete::tag,
@@ -262,7 +261,6 @@ fn run_2(input: &str) -> anyhow::Result<usize> {
     });
     println!("s: {smin} {smax}");
 
-   
     // let tot = (xmin..=xmax).into_par_iter().map(|x| {
     //     (mmin..=mmax).map(|m| {
     //         (amin..=amax).map(|a| {
@@ -278,7 +276,7 @@ fn run_2(input: &str) -> anyhow::Result<usize> {
     //     }).sum::<usize>()
     // }).sum();
 
-    Ok((xmax - xmin + 1) * (mmax - mmin + 1) * (amax-amin+1) * (smax-smin+1))
+    Ok((xmax - xmin + 1) * (mmax - mmin + 1) * (amax - amin + 1) * (smax - smin + 1))
     // Ok(tot)
 }
 
