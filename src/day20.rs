@@ -81,8 +81,7 @@ struct FlipFlop {
 }
 
 impl Module for FlipFlop {
-    fn add_input(&mut self, _i: &str) {
-    }
+    fn add_input(&mut self, _i: &str) {}
 
     fn set_input(
         &mut self,
@@ -187,6 +186,30 @@ fn run_1(input: &str) -> anyhow::Result<usize> {
 }
 
 fn run_2(_input: &str) -> anyhow::Result<usize> {
+    //let (_i, mut map) = parse(input).map_err(|e| anyhow::anyhow!(e.to_string()))?;
+    //let mut loop_cnt = 0;
+    //loop {
+    //    // Add low pulse from button
+    //    let bcast = "broadcaster";
+    //
+    //    let mut signals_to_process =
+    //        map.get_mut(bcast)
+    //            .unwrap()
+    //            .set_input("button", bcast, Pulse::Low);
+    //
+    //    while let Some((from, to, pulse)) = signals_to_process.pop_front() {
+    //        if let Some(module) = map.get_mut(&to) {
+    //            let mut new_signals = module.set_input(&from, &to, pulse);
+    //            let rx_low = new_signals.iter().any(|s| s.1 == "rx" && s.2 == Pulse::Low);
+    //            if rx_low {
+    //                return Ok(loop_cnt);
+    //            }
+    //            signals_to_process.append(&mut new_signals);
+    //        }
+    //    }
+    //
+    //    loop_cnt+=1;
+    //}
     todo!()
 }
 
@@ -268,7 +291,4 @@ mod tests {
         assert_eq!(super::run_1(INPUT_1).unwrap(), 32000000);
         assert_eq!(super::run_1(INPUT_2).unwrap(), 11687500);
     }
-
-    #[test]
-    fn day20_run_2() {}
 }
