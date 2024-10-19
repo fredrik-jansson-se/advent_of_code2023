@@ -16,7 +16,7 @@ pub fn run() -> anyhow::Result<()> {
 struct Coord3 {
     x: f64,
     y: f64,
-    z: f64,
+    _z: f64,
 }
 
 impl From<(i64, i64, i64)> for Coord3 {
@@ -24,14 +24,14 @@ impl From<(i64, i64, i64)> for Coord3 {
         Self {
             x: x as f64,
             y: y as f64,
-            z: z as f64,
+            _z: z as f64,
         }
     }
 }
 
 impl From<(f64, f64, f64)> for Coord3 {
     fn from((x, y, z): (f64, f64, f64)) -> Self {
-        Self { x, y, z }
+        Self { x, y, _z: z }
     }
 }
 
@@ -88,12 +88,8 @@ fn parse(i: crate::Input) -> crate::PResult<Vec<(Coord3, Coord3)>> {
 // |y1| - |y2| = |-v1y  v2y||t2|
 //
 fn solve2((p1, v1): &(Coord3, Coord3), (p2, v2): &(Coord3, Coord3)) -> Option<Coord3> {
-    //dbg! {(p1,v1)};
-    //dbg! {(p2,v2)};
     let a = nalgebra::Matrix2::new(-v1.x, v2.x, -v1.y, v2.y);
     let b = nalgebra::Matrix2x1::new(p1.x - p2.x, p1.y - p2.y);
-    //dbg! {&a};
-    //dbg! {b};
     let c = a.try_inverse()? * b;
     let t1 = c[0];
     let t2 = c[1];
