@@ -1,3 +1,5 @@
+use rayon::prelude::*;
+
 pub fn run() -> anyhow::Result<()> {
     let input = std::fs::read_to_string("day12.txt")?;
 
@@ -7,7 +9,7 @@ pub fn run() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 struct Row {
     springs: Vec<Spring>,
     dmg_groups: Vec<usize>,
@@ -136,14 +138,44 @@ fn run_1(input: &str) -> anyhow::Result<usize> {
     Ok(results.into_iter().sum())
 }
 
-fn run_2(_input: &str) -> anyhow::Result<usize> {
-    todo!()
+fn run_2(input: &str) -> anyhow::Result<usize> {
+    let (i, rows) = parse(input).map_err(|e| anyhow::anyhow!("{e}"))?;
+    assert!(i.is_empty());
+
+    let results: Vec<usize> = rows
+        .par_iter()
+        .map(|row| {
+            let unfolded = unfold(row);
+        println!("row");
+            arrangements(&unfolded.springs, &unfolded.dmg_groups)
+        })
+        .collect();
+    //for row in rows.into_iter() {
+    //    results.push(arrangements(&unfolded.springs, &unfolded.dmg_groups));
+    //    println!("row done");
+    //}
+    Ok(results.into_iter().sum())
+}
+
+fn unfold(r: &Row) -> Row {
+    let mut nr = Row {
+        springs: Vec::with_capacity((1 + r.springs.len()) * 5),
+        dmg_groups: Vec::with_capacity(r.springs.len() * 5),
+    };
+
+    for i in 0..5 {
+        nr.springs.extend(&r.springs);
+        if i < 4 {
+            nr.springs.push(Spring::Unknown);
+        }
+        nr.dmg_groups.extend(&r.dmg_groups);
+    }
+
+    nr
 }
 
 #[cfg(test)]
 mod tests {
-    use super::Spring;
-
     const INPUT: &str = "???.### 1,1,3
 .??..??...?##. 1,1,3
 ?#?#?#?#?#?#?#? 1,3,1,6
@@ -152,34 +184,14 @@ mod tests {
 ?###???????? 3,2,1";
 
     #[test]
-    fn day12_damage() {
-        assert!(super::find_can_be_damaged(&[Spring::Damaged], 1).is_some());
-        assert!(super::find_can_be_damaged(&[Spring::Operational, Spring::Damaged], 1).is_some());
-        assert!(super::find_can_be_damaged(&[Spring::Operational], 1).is_none());
-        assert!(super::find_can_be_damaged(
-            &[Spring::Operational, Spring::Unknown, Spring::Damaged],
-            2
-        )
-        .is_some());
-        assert!(super::find_can_be_damaged(
-            &[Spring::Operational, Spring::Damaged, Spring::Damaged],
-            2
-        )
-        .is_some());
-        assert!(super::find_can_be_damaged(
-            &[Spring::Operational, Spring::Damaged, Spring::Unknown],
-            2
-        )
-        .is_some());
-    }
-
-    #[test]
     fn day12_run_1() {
         assert_eq!(super::run_1(INPUT).unwrap(), 21);
     }
 
     #[test]
-    fn day12_run_2() {}
+    fn day12_run_2() {
+        assert_eq!(super::run_2(INPUT).unwrap(), 525152);
+    }
 
     #[test]
     fn day12_arrangements() {
@@ -219,5 +231,13 @@ mod tests {
             super::arrangements(&rows[0].springs, &rows[0].dmg_groups),
             10
         );
+    }
+
+    #[test]
+    fn day12_unfold() {
+        let (_, r1) = super::parse(".# 1").unwrap();
+        let (_, r2) = super::parse(".#?.#?.#?.#?.# 1,1,1,1,1").unwrap();
+        let r1 = super::unfold(&r1[0]);
+        assert_eq!(r1, r2[0]);
     }
 }
